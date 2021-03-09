@@ -1,5 +1,8 @@
 /* Copyright (c)  2021, CHENG Yifeng. All rights reserved.
+
+
  * */
+
 public class Tree {
     Node root;
 
@@ -7,11 +10,19 @@ public class Tree {
         root = new Leaf();
     }
 
+
+    //test
     public static void main(String[] args) {
         Tree t = new Tree();
-        for (int i = 0; i < 16; i++) {
+        //in theory, maximum capacity of this tree 16 elements
+        //however, if we add elements in sequence, it at most contains 10 elements
+        // add 11 elements will throw runtime exception
+        // and 10 elements will be fine
+        for (int i = 0; i < 11; i++) {
             t.add(i);
         }
+
+
     }
 
     public void add(int value) {
@@ -20,6 +31,7 @@ public class Tree {
                 Leaf tmp = (Leaf) root;
                 Leaf newLeaf = tmp.split();
                 root = new Branch(tmp, newLeaf);
+                add(value);
             }
         } else {
             if (!root.add(value)) {
@@ -31,9 +43,18 @@ public class Tree {
 
     //=========================================== Inner classes ===============================================
     abstract class Node {
+        /**
+         * the pointer is pointing to the element next to last added element
+         * e.g. pointer = 3,  |1|5|6|8|
+         *                           ^
+         * 8 is an invalid element, so it can be overwritten
+         * like: values[pointer++] = 9 inside add(9) method
+         */
         int pointer = 0;
 
+
         abstract boolean add(int value);
+
 
     }
 
@@ -72,9 +93,8 @@ public class Tree {
                         Leaf newLeaf = child[i - 1].split();
                         add(newLeaf);
                         add(value);
-                        break;
-
                     }
+                    break;
                 } else if (i < pointer - 1) {
                     i++;
 
@@ -84,13 +104,13 @@ public class Tree {
                             return false;
                         }  // when false is returned, through runtime exception
                         else {
-                            Leaf newLeaf = child[i - 1].split();
+                            Leaf newLeaf = child[i].split();
                             add(newLeaf);
                             add(value);
-                            break ;
                         }
-
                     }
+                    break ;
+
                 }
             }
             return true;
@@ -167,6 +187,15 @@ public class Tree {
             }
         }
     }
+
+    //TODO: implement the find method, return true if key is found
+    public boolean find(int key)
+    {
+        return true;
+    }
+
+    //TODO: walk through the leaf Node and print the key in ascending order
+    public void print(){}
 
 
 }
