@@ -7,16 +7,17 @@ public class Tree {
         root = new Leaf();
     }
 
-    public boolean add(int value) {
+    public void add(int value) {
         if (root instanceof Leaf) {
             if (!root.add(value)) {
-                Node tmp = root;
-                root = new Branch();
-
+                Leaf tmp = (Leaf)root;
+                Leaf newLeaf = tmp.split();
+                root = new Branch(tmp, newLeaf);
             }
         } else {
-
-
+             if(!root.add(value)){
+                 throw new RuntimeException("Tree is full");
+             }
         }
     }
 
@@ -41,30 +42,44 @@ public class Tree {
 
         }
 
-        boolean add(Leaf leaf) {
-            if (pointer > 3) {
-                return false;
-            }
+        void add(Leaf leaf) {
+
             child[pointer++] = leaf;
             sort();
-            return true;
         }
 
-//        boolean add(int value){
-//            for(int i = 0 ; i <  3 ; i ++){
-//                 if( value > child[i].values[0] && value <  child[i + 1].values[0]){
-//                     if(!child[i].add(value)){
-//                         if(pointer > 3){
-//                            return false;       // tree full exception should be thrown under this situation.
-//                         }else{
-//                             Leaf newLeaf = child[i].split();
-//                             add(newLeaf);
-//                         }
-//                     }
-//                 }
-//            }
-//            return true;
-//        }
+        /**
+         * @param value the value add to branch node
+         * @return false if the node is unsuccessfully added, indicating the
+         * tree is full, runtime exception should be thrown
+         * @see Leaf
+         *
+         * <p> split() in Leaf class,
+         * if tree is not full and child Node is full,
+         * call the split() in the child Node
+         * </p>
+         */
+        boolean add(int value) {
+            boolean addSuccess;
+            for (int i = 1; i < 4; ) {
+                if (value < child[i].values[0]) {
+                    if(!child[i - 1].add(value)){
+                        //split
+                        Leaf newLeaf = child[i-1].split();
+                        add(newLeaf);
+                        add(value);
+
+                    }
+                } else if (i < 3) {
+                    i++;
+                } else {
+                    if(! child[i].add(value)){
+                        return false ;   // when false is returned, through runtime exception
+                    }
+                }
+            }
+            return true;
+        }
 
         void sort() {
             Leaf temp;
