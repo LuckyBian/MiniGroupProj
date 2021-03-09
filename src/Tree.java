@@ -1,4 +1,4 @@
-/* Copyright (c)  2020, CHENG Yifeng. All rights reserved.
+/* Copyright (c)  2021, CHENG Yifeng. All rights reserved.
  * */
 public class Tree {
     Node root;
@@ -7,17 +7,24 @@ public class Tree {
         root = new Leaf();
     }
 
+    public static void main(String[] args) {
+        Tree t = new Tree();
+        for (int i = 0; i < 16; i++) {
+            t.add(i);
+        }
+    }
+
     public void add(int value) {
         if (root instanceof Leaf) {
             if (!root.add(value)) {
-                Leaf tmp = (Leaf)root;
+                Leaf tmp = (Leaf) root;
                 Leaf newLeaf = tmp.split();
                 root = new Branch(tmp, newLeaf);
             }
         } else {
-             if(!root.add(value)){
-                 throw new RuntimeException("Tree is full");
-             }
+            if (!root.add(value)) {
+                throw new RuntimeException("Tree is full!");
+            }
         }
     }
 
@@ -28,9 +35,6 @@ public class Tree {
 
         abstract boolean add(int value);
 
-        abstract void sort();
-
-
     }
 
     //========================================= Branch Node ============================================
@@ -39,11 +43,12 @@ public class Tree {
 
         //========================== Constructors ==========================
         public Branch(Leaf... x) {
-
+            for (int i = 0; i < Math.min(x.length, 4); i++) {
+                add(x[i]);
+            }
         }
 
         void add(Leaf leaf) {
-
             child[pointer++] = leaf;
             sort();
         }
@@ -60,21 +65,31 @@ public class Tree {
          * </p>
          */
         boolean add(int value) {
-            boolean addSuccess;
-            for (int i = 1; i < 4; ) {
+            for (int i = 1; i < pointer; ) {
                 if (value < child[i].values[0]) {
-                    if(!child[i - 1].add(value)){
+                    if (!child[i - 1].add(value)) {
                         //split
-                        Leaf newLeaf = child[i-1].split();
+                        Leaf newLeaf = child[i - 1].split();
                         add(newLeaf);
                         add(value);
+                        break;
 
                     }
-                } else if (i < 3) {
+                } else if (i < pointer - 1) {
                     i++;
+
                 } else {
-                    if(! child[i].add(value)){
-                        return false ;   // when false is returned, through runtime exception
+                    if (!child[i].add(value)) {
+                        if (pointer == 4) {
+                            return false;
+                        }  // when false is returned, through runtime exception
+                        else {
+                            Leaf newLeaf = child[i - 1].split();
+                            add(newLeaf);
+                            add(value);
+                            break ;
+                        }
+
                     }
                 }
             }
@@ -83,7 +98,7 @@ public class Tree {
 
         void sort() {
             Leaf temp;
-            for (int i = 0; i < child.length - 1 - i; i++) {
+            for (int i = 0; i < pointer - 1 - i; i++) {
                 if (child[i].values[0] > child[i + 1].values[0]) {
                     temp = child[i];
                     child[i] = child[i + 1];
@@ -97,12 +112,11 @@ public class Tree {
     class Leaf extends Node {
         int[] values = new int[4];
 
-        Branch parent = null;
 
         //========================== Constructors ==========================
 
         public Leaf(int... x) {
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < Math.min(4, x.length); i++) {
                 values[i] = x[i];
             }
         }
@@ -120,9 +134,12 @@ public class Tree {
          */
         private Leaf split() {
             Leaf newLeaf = new Leaf();
-            for (int i = 2; i < pointer; i++) {
-                newLeaf.add(i);
+            int valueCnt = pointer;
+            for (int i = 2; i < valueCnt; i++) {
+                newLeaf.add(this.values[i]);
+                pointer--;
             }
+
             return newLeaf;
         }
 
@@ -141,7 +158,7 @@ public class Tree {
 
         public void sort() {
             int temp;
-            for (int i = 0; i < values.length - 1 - i; i++) {
+            for (int i = 0; i < pointer - 1 - i; i++) {
                 if (values[i] > values[i + 1]) {
                     temp = values[i];
                     values[i] = values[i + 1];
