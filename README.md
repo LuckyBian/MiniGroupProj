@@ -1,4 +1,7 @@
 # MiniGroupProj
-
-The framework part is done, and add() method including Node split and Tree full exception thrown is implemented but not yet tested.
-Need furthur testing and debugging if necessary.
+The add() method is operational and bugfree. 
+Read comments in the code file.
+Your guys need to implement:
+boolean find(int key),
+void print()
+Good luck! 
