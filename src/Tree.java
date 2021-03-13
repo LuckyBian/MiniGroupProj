@@ -2,9 +2,10 @@
 
 
  * */
-
+import java.util.*;
 public class Tree {
     Node root;
+    public static ArrayList<Integer> data = new ArrayList<>();
 
     public Tree() {
         root = new Leaf();
@@ -33,6 +34,16 @@ public class Tree {
     }
 
     public void add(int value) {
+        boolean add = true;
+        for(int i = 0; i < data.size();i++){
+            if(value==data.get(i)){
+                add = false;
+                break;
+            }
+        }
+        if(add) {
+            data.add(value);
+        }
         if (root instanceof Leaf) {
             if (!root.add(value)) {
                 Leaf tmp = (Leaf) root;
@@ -50,7 +61,16 @@ public class Tree {
     //TODO: implement the find method, return true if key is found
     public boolean find(int key)
     {
-        return true;
+        
+        boolean have = false;
+        for(int i = 0; i < data.size();i++){
+            if(key == data.get(i)){
+                have = true;
+                break;
+            }
+        }
+
+        return have;
     }
 
     //TODO: walk through the leaf Node and print the key in ascending order
